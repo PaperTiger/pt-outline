@@ -1,12 +1,47 @@
 [
- {"name":"Handbook","team":"read","description":"How Paper Tiger works, for people and agents: preferences, context, methodologies, writing rules."},
- {"name":"Agents","team":"read","description":"How to install and use the shared skills and agents, plus the read-only skill mirror from pt-agents."},
- {"name":"Strategy","team":"read_write","description":"One parent doc per strategy service, with its methods and guides."},
- {"name":"Design","team":"read_write","description":"One parent doc per design service, with its methods and guides."},
- {"name":"Engineering","team":"read_write","description":"One parent doc per engineering service, with its methods and guides."},
- {"name":"Clients","team":"read_write","description":"Active clients only. One parent doc per client."},
- {"name":"Archive","team":"read","description":"Closed and paused clients, and anything no longer actionable."},
- {"name":"Agency","team":"read_write","description":"Paper Tiger's own work: brand, case studies, website, content, SEO."},
- {"name":"Resources","team":"read_write","description":"Reusable things: templates, automations, tools."},
- {"name":"Partners","team":null,"description":"Owners only: commercial terms, finance, legal, partner notes."}
+  {
+    "name": "Handbook",
+    "team": "read",
+    "description": "How Paper Tiger works, for people and agents: preferences, context, methodologies, writing rules."
+  },
+  {
+    "name": "Agents",
+    "team": "read",
+    "description": "How to install and use the shared skills and agents, plus the read-only skill mirror from pt-agents."
+  },
+  {
+    "name": "Strategy",
+    "team": "read_write",
+    "description": "One parent doc per strategy service, with its methods and guides."
+  },
+  {
+    "name": "Design",
+    "team": "read_write",
+    "description": "One parent doc per design service, with its methods and guides."
+  },
+  {
+    "name": "Engineering",
+    "team": "read_write",
+    "description": "One parent doc per engineering service, with its methods and guides."
+  },
+  {
+    "name": "Clients",
+    "team": "read_write",
+    "description": "Active clients only. One parent doc per client."
+  },
+  {
+    "name": "Agency",
+    "team": "read_write",
+    "description": "Paper Tiger's own work: brand, case studies, website, content, SEO."
+  },
+  {
+    "name": "Resources",
+    "team": "read_write",
+    "description": "Reusable things: templates, automations, tools."
+  },
+  {
+    "name": "Partners",
+    "team": null,
+    "description": "Owners only: commercial terms, finance, legal, partner notes."
+  }
 ]

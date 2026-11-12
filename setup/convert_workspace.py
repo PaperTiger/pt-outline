@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Convert pt-workspace/clients into Outline-ready markdown laid out like the Outline structure.
 
-Output: <out>/<Clients|Archive>/<Client>.md, <Client>/<Engagement>.md, <Engagement>/Scope.md,
+Output: <out>/Clients/<Client>.md, <Client>/<Engagement>.md, <Engagement>/Scope.md,
 <Engagement>/Decisions.md, <Client>/Meetings.md, <Client>/Meetings/<YYYY-MM-DD Title>.md
 
 Every file gets frontmatter: title, key (stable, used by the importer to match docs), source, source_url, moved.
@@ -17,10 +17,12 @@ GH = "https://github.com/PaperTiger/pt-workspace/blob/develop/"
 report = {"clients": [], "warnings": []}
 
 
-def fm(title, key, source, source_url=None):
+def fm(title, key, source, source_url=None, archived=False):
     lines = ["---", f"title: {json.dumps(title)}", f"key: {key}", f"source: {json.dumps(source)}"]
     if source_url:
         lines.append(f"source_url: {source_url}")
+    if archived:
+        lines.append("archived: true")
     lines += [f"moved: {MOVED}", "---", ""]
     return "\n".join(lines)
 
@@ -74,10 +76,13 @@ def main():
         slug = os.path.basename(cpath)
         y = yaml.safe_load(open(cdir))
         name, status = y["name"], y.get("status", "active")
-        coll = "Clients" if status == "active" else "Archive"
+        # every client goes in Clients; a paused or closed one is marked `archived` and the importer archives it
+        # in place with Outline's archive feature (out of the sidebar and default search, restorable in one click)
+        coll = "Clients"
+        archived = status != "active"
         base = os.path.join(OUT, coll, safe(name))
         ckey = f"ws:client:{slug}"
-        info = {"slug": slug, "name": name, "status": status, "collection": coll, "engagements": [], "meetings": 0}
+        info = {"slug": slug, "name": name, "status": status, "archived": archived, "engagements": [], "meetings": 0}
 
         # map of relative path (from client dir) -> key, for link rewriting
         keymap = {"README.md": ckey}
@@ -151,7 +156,7 @@ def main():
         body = relink(body, ".")
         body = body.rstrip() + "\n\n## Links\n\n" + ("\n".join(links) if links else "No tool links found at the source.") + "\n"
         body = body.rstrip() + "\n\n## Meetings\n\nOne doc per client meeting, under [Meetings](outline-key:" + ckey + ":meetings).\n"
-        write(base + ".md", fm(name, ckey, f"pt-workspace, clients/{slug}/README.md", f"{GH}clients/{slug}/README.md") + body)
+        write(base + ".md", fm(name, ckey, f"pt-workspace, clients/{slug}/README.md", f"{GH}clients/{slug}/README.md", archived) + body)
 
         # ---------- engagements
         meetings_all = []
@@ -202,7 +207,8 @@ def main():
     write(os.path.join(OUT, "_workspace-report.json"), json.dumps(report, indent=2))
     print(json.dumps({"clients": len(report["clients"]),
                       "meetings": sum(c["meetings"] for c in report["clients"]),
-                      "by_collection": {k: [c["name"] for c in report["clients"] if c["collection"] == k] for k in ("Clients", "Archive")},
+                      "active": [c["name"] for c in report["clients"] if not c["archived"]],
+                      "archived": [c["name"] for c in report["clients"] if c["archived"]],
                       "warnings": report["warnings"]}, indent=1))
 
 

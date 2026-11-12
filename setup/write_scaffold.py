@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Writes the docs that don't come from a source: collection intros, service parents,
+"""Writes the docs that don't come from a source: service parents,
 the Client template and Handbook -> Writing for agents. Usage: write_scaffold.py <out dir>"""
 import os, sys, json
 
@@ -20,76 +20,8 @@ def doc(path, title, key, body, source="Written during the Outline move", source
         f.write("\n".join(head) + body.strip() + "\n")
 
 
-# ---------------------------------------------------------------- collection intros
-INTROS = {
- "Handbook": dict(
-  holds="How Paper Tiger works, for people and agents: how to get started, how this system fits together, the rules for writing here, and the changelog.",
-  not_here="- Client work goes in **Clients**.\n- Service methods and guides go in **Strategy**, **Design** or **Engineering**.\n- Brand, voice and our own marketing go in **Agency**.\n- Templates, automations and tools go in **Resources**.\n- Money, contracts and partner matters go in **Partners**.",
-  edit="Everyone can read. The partners (Owners) edit. Suggest a change by commenting on the doc.",
-  org="- **Start here:** the first doc to read.\n- **How this system works:** where things live, who owns what, access.\n- **Writing for agents:** the rules every agent and person follows when writing here.\n- **Changelog:** dated changes to the system."),
- "Agents": dict(
-  holds="How to install and use Paper Tiger's shared skills and agents, and a read-only mirror of every skill in the `pt-agents` repo.",
-  not_here="- The skills themselves live in the [pt-agents repo](https://github.com/PaperTiger/pt-agents). The mirror here is generated from it, so edits made in Outline are overwritten.\n- How we work in general goes in **Handbook**.",
-  edit="Everyone can read. The partners (Owners) edit the install and contribute docs. **Directory** is written by the mirror automation: change a skill in GitHub, or ask Claude to file a suggestion with `core:suggest-change`.",
-  org="- **Install and update the agent plugins**\n- **Contribute:** adding or changing a skill or agent.\n- **Directory:** one doc per agent group, with each skill as a child doc."),
- "Strategy": dict(
-  holds="One parent doc per strategy service, with its methods and guides underneath.",
-  not_here="- Client-specific strategy work goes in that client's docs in **Clients**.\n- Reusable templates go in **Resources → Templates**.",
-  edit="Everyone can edit.",
-  org="One parent doc per service from our capabilities list: Information Architecture, Competitor Research, User Experience, Content Strategy, Messaging and Copywriting, and AEO and SEO Optimization. Methods and guides nest under the service they belong to."),
- "Design": dict(
-  holds="One parent doc per design service, with its methods and guides underneath.",
-  not_here="- Client-specific design decisions go in that client's Decisions doc in **Clients**.\n- Paper Tiger's own brand goes in **Agency → Brand**.",
-  edit="Everyone can edit.",
-  org="One parent doc per service: Design Systems, Visual Brand Identity and Animated Visuals. **Website design process** holds the step-by-step design process guides, from discovery to hi-fi wireframes."),
- "Engineering": dict(
-  holds="One parent doc per engineering service, with its methods and guides underneath.",
-  not_here="- Code lives in each client's project repo on GitHub, not here.\n- Server notes for our own systems live in their repos (for example `pt-outline/server.md`).",
-  edit="Everyone can edit.",
-  org="One parent doc per service: Webflow, Headless and Animation."),
- "Clients": dict(
-  holds="Active clients only. One parent doc per client, with its engagements and meetings underneath.",
-  not_here="- Closed and paused clients move, whole tree, to **Archive**. Nothing is deleted.\n- Fees, rates, budgets and invoices go only in **Partners**. In client docs they're replaced with \"Commercial terms are held by the partners.\"\n- Original files stay in Google Drive, tasks in Asana, code in the client's repo. Link to them from the client overview.",
-  edit="Everyone can edit.",
-  org="```\n<Client name>            overview: who they are, contacts, status, and the only list of links\n  <Engagement name>       the brief: current phase, key dates, recent decisions, open questions\n    Scope                 what the contract says, without money\n    Decisions             dated table, newest first, each row with a source\n  Meetings\n    YYYY-MM-DD Title      one per real client meeting\n```\nStart a new client from **Resources → Templates → Client template**."),
- "Archive": dict(
-  holds="Closed and paused clients, and anything else that's no longer actionable. Kept whole, so the history stays findable.",
-  not_here="- Active clients go in **Clients**. When a paused client restarts, move its tree back.",
-  edit="Everyone can read. The partners (Owners) move things in and out.",
-  org="Same layout as **Clients**: one parent doc per client, with engagements and meetings underneath. Each client overview says whether it's paused or closed."),
- "Agency": dict(
-  holds="Paper Tiger's own work: brand and voice, case studies, the papertiger.com website, content and SEO.",
-  not_here="- How we work goes in **Handbook**.\n- Client work goes in **Clients**.",
-  edit="Everyone can edit.",
-  org="- **Brand:** agency facts, voice rules and examples, messaging, partner bios, styleguide.\n- Case studies, website, content and SEO docs are added as the work happens."),
- "Resources": dict(
-  holds="Reusable things: templates, automations and tools.",
-  not_here="- Executable starter kits and skills live in `pt-agents`.\n- Large files stay in Drive. Link to them.",
-  edit="Everyone can edit.",
-  org="- **Templates:** starting points, including the Client template.\n- **Automations:** one doc per automation, with what it does, where it runs and who owns it.\n- **Tools:** the tools we use and the ones we've retired."),
- "Partners": dict(
-  holds="Owners only: commercial terms, finance, legal, and partner notes. This is the only place fees, rates, budgets and invoices are written down.",
-  not_here="- Everything that isn't money, contracts or partner matters goes in the other collections.",
-  edit="Only the partners (Owners) can open this collection. The Team group has no access.",
-  org="Organized by the partners as they add to it."),
-}
-for i, (coll, d) in enumerate(INTROS.items()):
-    body = f"""{d['holds']}
-
-## What doesn't go here
-
-{d['not_here']}
-
-## Who can edit
-
-{d['edit']}
-
-## How it's organized
-
-{d['org']}
-
-Everyone writing here follows **[Writing for agents](outline-key:scaffold:handbook:writing-for-agents)**."""
-    doc(f"{coll}/About {coll}.md", f"About {coll}", f"scaffold:intro:{coll.lower()}", body, index=0)
+# Collection intros live in each collection's Overview tab, edited in Outline (Marc moved them there on
+# 2026-11-12 and deleted the About docs). They're no longer written here.
 
 # ---------------------------------------------------------------- services
 AO = "writers:proposal-writing, references/agency-overview.md (Our capabilities)"
@@ -261,7 +193,7 @@ These rules apply to every agent and every person writing in Outline. Agents tha
 | Installing and using skills | Agents (the skill mirror is read-only) |
 | Methods and guides for a service | Strategy, Design or Engineering, under the service |
 | An active client | Clients → the client |
-| A closed or paused client | Archive, whole tree |
+| A closed or paused client | Archived in place in Clients, with Outline's Archive button |
 | Our own brand, site, content, SEO | Agency |
 | Templates, automations, tools | Resources |
 | Money, contracts, partner matters | Partners (Owners only) |

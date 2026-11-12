@@ -2,11 +2,13 @@
 """Import prepared markdown into Outline. Safe to re-run: nothing is duplicated.
 
 Layout: <content>/<Collection>/<Doc>.md, children in <content>/<Collection>/<Doc>/.
-Frontmatter: title, key, source, source_url, moved, index (optional).
+Frontmatter: title, key, source, source_url, moved, index and archived (optional).
 
 Matching: a local state file maps each doc's `key` to its Outline id. If the state is lost, docs are matched
 on title + parent, as the build brief asks. Pass 1 creates or updates every doc; pass 2 rewrites
-`outline-key:<key>` links to real Outline links and appends the source line.
+`outline-key:<key>` links to real Outline links and appends the source line. Pass 3 sets sidebar order; pass 4
+archives (in place) every doc whose frontmatter says `archived: true`.
+A doc that someone deleted or archived in Outline is skipped with everything under it, never updated or recreated.
 
 Usage: import_content.py <content dir> <state.json> [--dry-run]
 Needs OUTLINE_SETUP_KEY in ../.env. Talks to https://papertiger.agency via curl.
@@ -96,9 +98,10 @@ def source_line(meta):
 def main():
     state = json.load(open(STATE)) if os.path.exists(STATE) else {}
     colls = {c["name"]: c["id"] for c in api("collections.list", {"limit": 100})["data"]}
-    stats = {"created": 0, "updated": 0, "unchanged": 0}
+    stats = {"created": 0, "updated": 0, "unchanged": 0, "skipped": []}
     docs = []  # (meta, body, id)
     order = {}  # (collection, parent) -> child ids in the wanted order
+    to_archive = []  # docs to archive at the end
 
     def existing_children(coll_id, parent_id):
         out, offset = {}, 0
@@ -119,11 +122,16 @@ def main():
         for meta, body, children in items:
             k = meta.get("key") or f"path:{coll_id}:{parent_id}:{meta['title']}"
             doc_id = state.get(k)
-            if doc_id:
+            if doc_id and not DRY:
+                # a doc someone deleted or archived in Outline stays that way: skip it and everything under it
                 try:
-                    api("documents.info", {"id": doc_id})
+                    live = api("documents.info", {"id": doc_id})["data"]
+                    gone = live.get("deletedAt") or live.get("archivedAt")
                 except RuntimeError:
-                    doc_id = None
+                    gone = True  # permanently deleted
+                if gone:
+                    stats["skipped"].append(meta["title"])
+                    continue
             if not doc_id:
                 if siblings is None:
                     siblings = existing_children(coll_id, parent_id) if not DRY else {}
@@ -141,6 +149,8 @@ def main():
                     req["parentDocumentId"] = parent_id
                 doc_id = api("documents.create", req)["data"]["id"]
                 stats["created"] += 1
+                if meta.get("archived") == "true":  # only new docs: one a person restored stays restored
+                    to_archive.append(doc_id)
             state[k] = doc_id
             docs.append((meta, body, doc_id, k))
             order.setdefault((coll_id, parent_id), []).append(doc_id)
@@ -197,6 +207,11 @@ def main():
                     body["parentDocumentId"] = parent
                 api("documents.move", body)
                 moves += 1
+    # pass 4: archive what the source marks `archived: true` (paused and closed clients), with Outline's archive
+    # feature, in place. Last, because an archived doc can't be updated or reordered.
+    for doc_id in to_archive:
+        api("documents.archive", {"id": doc_id})
+    stats["archived"] = len(to_archive)
     print(json.dumps({**stats, "total": len(docs), "reordered": moves, "unresolved_links": sorted(missing)}, indent=1))
 
 

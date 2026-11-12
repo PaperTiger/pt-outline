@@ -12,7 +12,8 @@ jq -c '.[]' setup/collections.json | while read -r c; do
     ID=$(bin/ol collections.create "$(jq -nc --arg n "$NAME" --arg d "$DESC" '{name:$n, description:$d, sharing:false}')" | jq -r .data.id)
     echo "created $NAME"
   else
-    bin/ol collections.update "$(jq -nc --arg id "$ID" --arg d "$DESC" '{id:$id, description:$d, sharing:false}')" >/dev/null
+    # the description is the collection's Overview tab, edited by people in Outline: only set it on create
+    bin/ol collections.update "$(jq -nc --arg id "$ID" '{id:$id, sharing:false}')" >/dev/null
     echo "exists  $NAME"
   fi
   bin/ol collections.add_group "{\"id\":\"$ID\",\"groupId\":\"$OWN\",\"permission\":\"admin\"}" >/dev/null

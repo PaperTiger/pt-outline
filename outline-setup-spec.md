@@ -99,7 +99,7 @@ doctl compute droplet create pt-outline --region nyc3 --size s-1vcpu-2gb --image
 
 ## Structure
 
-Outline has collections at the top. Inside a collection, documents nest under other documents, so a "folder" is a parent document with a short intro. The names line up with the Figma structure Mirko set on November 3 (Projects, Agency, Resources, Archive).
+Outline has collections at the top. Inside a collection, documents nest under other documents, so a "folder" is a parent document with a short intro. The names line up with the Figma structure Mirko set on November 3 (Projects, Agency, Resources, Archive). Archive is the one exception: it's Outline's archive feature, used in place, not a collection.
 
 | Collection | Holds |
 | --- | --- |
@@ -109,7 +109,6 @@ Outline has collections at the top. Inside a collection, documents nest under ot
 | Design | One parent doc per design service, with its methods and guides |
 | Engineering | One parent doc per engineering service, with its methods and guides |
 | Clients | Active clients only. One parent doc per client |
-| Archive | Closed and paused clients, and anything no longer actionable |
 | Agency | Paper Tiger's own work: brand, case studies, website, content, SEO |
 | Resources | Reusable things: templates, automations, tools |
 | Partners | Owners only: commercial terms, finance, legal, partner notes |
@@ -130,7 +129,7 @@ Clients/
 
 - **The client overview** covers who they are, contacts (name, role, work email), status, and links to Asana, Drive, Figma, the repo and the Slack channel. It's the only place those links are listed.
 - **Commercial terms** are replaced with "Commercial terms are held by the partners."
-- **A closed or paused client** moves, whole tree, to Archive. Nothing is deleted.
+- **A closed or paused client** is archived in place with Outline's Archive button, whole tree. It leaves the sidebar and default search (for people and for MCP agents), stays readable from the Archive page or a search filtered to Archived, and comes back with Restore. Nothing is deleted.
 - **A Client template** in Resources → Templates holds this structure with placeholder text.
 
 ## Permissions
@@ -141,7 +140,6 @@ Clients/
 | Agents | View | Manage |
 | Strategy, Design, Engineering | Edit | Manage |
 | Clients | Edit | Manage |
-| Archive | View | Manage |
 | Agency | Edit | Manage |
 | Resources | Edit | Manage |
 | Partners | No access | Manage |
@@ -184,7 +182,7 @@ Bring over everything below. When a source has nothing worth keeping, skip it an
 | Source | Goes to |
 | --- | --- |
 | `pt-workspace/clients/` (active) | Clients. Client README becomes the overview, engagement README becomes the brief, `scope.md` and `decisions.md` become their docs, `meetings/` become Meetings docs |
-| `pt-workspace/clients/` (paused or closed) | Archive, same layout |
+| `pt-workspace/clients/` (paused or closed) | Clients, same layout, then archived in place |
 | `pt-workspace/agency/` | Handbook, Agency or Resources, by subject |
 | Notion → Client Docs | Merge into the matching client. Where Notion and `pt-workspace` disagree, keep the `pt-workspace` version and add the other under Open questions in the brief |
 | Notion → Meetings | The matching client's Meetings. Internal meetings feed that client's decisions and brief instead |
@@ -277,10 +275,13 @@ Add a dated row whenever you decide something this brief doesn't cover.
 | 2026-11-12 | Spaces CDN off | Outline serves uploads through short-lived signed links, which a CDN can't cache, and a CDN would keep copies of private client files at its edge servers |
 | 2026-11-12 | Service parents come from the agency overview's capabilities list. Content folds into Strategy as Content Strategy | It's the most recent list of services the partners have signed off. A separate Content parent would have duplicated Content Strategy |
 | 2026-11-12 | The Design process guides sit under a "Website design process" parent in Design | There are seven of them and they describe one process. Website redesign is one of the three areas of expertise on papertiger.com |
-| 2026-11-12 | Each collection opens with a pinned "About <collection>" doc | The doc tells people and agents what belongs in the collection, and pinning keeps it at the top |
+| 2026-11-12 | Each collection opens with a pinned "About <collection>" doc (superseded the same day: intros moved to each Overview tab) | The doc tells people and agents what belongs in the collection, and pinning keeps it at the top |
 | 2026-11-12 | Outline's sample "Welcome" collection archived, not deleted | Nothing in it was ours, and archiving can be undone |
 | 2026-11-12 | `pt-workspace/agency` not imported | Every file in it is an empty placeholder |
 | 2026-11-12 | The importer sets the sidebar order explicitly | Outline puts each new doc at the top, which reversed every list, including newest-first meetings |
 | 2026-11-12 | Mirrored skill docs carry a "Mirror key · Source hash" line, and the mirror updates only when the hash changes | Outline rewrites markdown on save, so comparing the text would add a new revision to every skill doc on every push |
 | 2026-11-12 | The mirror warns and skips when its key is missing | Its first run on develop happens before the `pt-agents-mirror` user and its key exist |
 | 2026-11-12 | MCP left on (Outline's default) and given custom guidance that points to Handbook → Writing for agents | Outline 1.12 turns MCP on unless it's switched off. The guidance repeats the essential rules, because an agent may not open the Handbook doc before it writes |
+| 2026-11-12 | No Archive collection: closed and paused clients, and anything else no longer actionable, are archived in place with Outline's archive feature | Marc wants old content out of the sidebar and out of search results. Archived docs are excluded from default search in the app and over MCP, and restore to where they were. The Archive collection (and its Clients/Other sections, tried and dropped the same day) is gone |
+| 2026-11-12 | Collection intros live in each collection's Overview tab; the About docs are gone | Marc moved them there. The scaffold no longer writes them, and `collections.sh` sets a description only when it creates a collection |
+| 2026-11-12 | The importer skips docs a person deleted or archived in Outline, and archives a source's paused or closed clients only when it creates them | A rerun must never bring back, overwrite or re-archive what someone changed |
