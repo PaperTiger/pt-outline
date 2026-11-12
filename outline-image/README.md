@@ -1,6 +1,6 @@
 # Patched Outline image
 
-papertiger.agency runs Outline with a small patch on top, built by `.github/workflows/outline-image.yml`
+papertiger.agency runs Outline with two small patches on top, built by `.github/workflows/outline-image.yml`
 into `ghcr.io/papertiger/outline:<version>-pt`. Nothing here touches the database, so the stock image can
 always replace ours.
 
@@ -45,4 +45,4 @@ Each published build also gets a `<version>-pt-<commit>` tag, so you can pin an 
 ## Rolling back
 
 Set the image in `docker-compose.yml` back to `docker.getoutline.com/outlinewiki/outline:<version>` and run
-`docker compose up -d outline`. The tabs go back to Outline's defaults. No data changes either way.
+`docker compose up -d outline`. The tabs and colors go back to Outline's defaults. No data changes either way.
