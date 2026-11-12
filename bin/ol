@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Outline API helper. Usage: bin/ol <method> ['<json body>']
+# Reads OUTLINE_SETUP_KEY from this repo's .env (never printed).
+set -euo pipefail
+DIR="$(cd "$(dirname "$0")/.." && pwd)"
+K=$(grep '^OUTLINE_SETUP_KEY=' "$DIR/.env" | head -1 | cut -d= -f2- | sed -E 's/\r$//; s/^[[:space:]]*"?//; s/"?[[:space:]]*$//')
+BODY="${2:-}"; [ -n "$BODY" ] || BODY='{}'
+curl -s --resolve papertiger.agency:443:64.225.7.247 -X POST "https://papertiger.agency/api/$1" \
+  -H "Authorization: Bearer $K" -H 'content-type: application/json' --data-binary "$BODY"

@@ -270,3 +270,8 @@ Add a dated row whenever you decide something this brief doesn't cover.
 | 2026-11-12 | A dedicated droplet, `pt-outline`, not `pt-utility` | `pt-utility` holds Drive manager credentials for every client folder, and its archive jobs can fill the disk. A public, team-facing app shouldn't share either risk |
 | 2026-11-12 | Caddy on the host as the reverse proxy | Automatic TLS, nothing extra to run in Docker |
 | 2026-11-12 | Outline's own Postgres in Docker, not Supabase | Outline manages its own schema and migrations |
+| 2026-11-12 | Content before people. Groups are created empty, collections and content go in, Marc reviews, then invites go out last on his word. Notion pointer lines wait until after his review | Marc wants the documentation in place before anyone is invited. Nothing in the content work needs user records |
+| 2026-11-12 | The setup key is a personal key (Settings → API & Access → Personal keys), passed through the Mac `.env` as `OUTLINE_SETUP_KEY` rather than pasted in chat | Outline 1.12 has no separate "API Keys" page. Keeping it out of chat keeps it out of the transcript |
+| 2026-11-12 | Email (magic link) sign-in turned off, allowed domain set by API | Both were defaults that conflicted with "Google only, papertiger.com only" |
+| 2026-11-12 | Emails come from `noreply@papertiger.com` via the Workspace relay | The relay accepts any address in a Workspace domain. `papertiger.agency` isn't in Workspace |
+| 2026-11-12 | Spaces CDN off | Outline serves uploads through short-lived signed links, which a CDN can't cache, and a CDN would keep copies of private client files at its edge servers |
