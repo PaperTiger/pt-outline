@@ -87,4 +87,6 @@ Backups expire after 30 days via the bucket lifecycle rule `expire-backups-30d` 
 - 2026-11-12: Outline 1.12.0, Postgres and Redis deployed. Caddy issued the Let's Encrypt certificate once the A record resolved
 - 2026-11-12: Marc signed in as the first user (workspace admin)
 - 2026-11-12: Spaces bucket, CORS and lifecycle set. First backup taken and restore proven (counts matched)
-- 2026-11-12: The first Spaces key Marc made has full access to every bucket. To be replaced with a key scoped to `pt-outline`
+- 2026-11-12: The first Spaces key had full access to every bucket. Marc regenerated `outline-11122026` as `bucket=pt-outline;permission=readwrite`. Confirmed it can't read other buckets
+- 2026-11-12: Backup script now deletes its local dump even when the upload fails
+- 2026-11-12: Workspace renamed "Paper Tiger", allowed domain set to `papertiger.com`, email (magic link) sign-in turned off. Google is the only sign-in method
