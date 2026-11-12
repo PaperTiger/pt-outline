@@ -2,7 +2,9 @@
 # Secrets live in /opt/outline/.env (mode 600, never committed).
 services:
   outline:
-    image: docker.getoutline.com/outlinewiki/outline:1.12.0
+    # Outline 1.12.0 with our collection-tabs patch (outline-image/README.md).
+    # Stock image, for rollback: docker.getoutline.com/outlinewiki/outline:1.12.0
+    image: ghcr.io/papertiger/outline:1.12.0-pt
     env_file: .env
     ports:
       - "127.0.0.1:3000:3000"   # reachable only through Caddy on the host
