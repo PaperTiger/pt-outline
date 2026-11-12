@@ -1,0 +1,90 @@
+name: Build patched Outline image
+
+# Builds Outline at the version in outline-image/VERSION with our patches applied, the same way upstream
+# builds its official image (Dockerfile.base, then Dockerfile). If a patch no longer applies to that version,
+# the run fails at "Apply patches" and nothing is published: the server keeps running the image it has.
+# How to upgrade and how to roll back: outline-image/README.md.
+
+on:
+  # a push that changes the patch or version runs a check build (never publishes)
+  push:
+    paths:
+      - "outline-image/**"
+      - ".github/workflows/outline-image.yml"
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: "Publish the image to ghcr.io (off = build and check only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: outline-image
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Read version
+        id: v
+        run: |
+          VERSION=$(tr -d '[:space:]' < outline-image/VERSION)
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=ghcr.io/papertiger/outline:${VERSION}-pt" >> "$GITHUB_OUTPUT"
+          echo "sha_tag=ghcr.io/papertiger/outline:${VERSION}-pt-${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Get Outline source
+        run: git clone --depth 1 --branch "v${{ steps.v.outputs.version }}" https://github.com/outline/outline.git src
+
+      - name: Apply patches
+        working-directory: src
+        run: |
+          for p in ../outline-image/patches/*.patch; do
+            echo "::group::$p"
+            git apply --check "$p" || { echo "::error::$p does not apply to Outline v${{ steps.v.outputs.version }}. Update the patch (outline-image/README.md)."; exit 1; }
+            git apply "$p"
+            echo "::endgroup::"
+          done
+          git diff --stat
+
+      - name: Add swap (the frontend build needs more memory than the runner has)
+        run: |
+          sudo swapoff -a || true
+          sudo fallocate -l 10G /swapfile && sudo chmod 600 /swapfile && sudo mkswap /swapfile && sudo swapon /swapfile
+          free -m
+
+      - name: Build base (compiles Outline)
+        working-directory: src
+        run: docker build -f Dockerfile.base -t outline-base-pt .
+
+      - name: Build image
+        working-directory: src
+        run: |
+          docker build --build-arg BASE_IMAGE=outline-base-pt \
+            --label org.opencontainers.image.source=https://github.com/PaperTiger/pt-outline \
+            --label org.opencontainers.image.description="Outline ${{ steps.v.outputs.version }} with Paper Tiger patches" \
+            -t "${{ steps.v.outputs.tag }}" -t "${{ steps.v.outputs.sha_tag }}" .
+
+      - name: Check the patch is in the built app
+        run: |
+          docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
+            'grep -rlq "Least recently updated" build/app/assets && grep -rq "archivedInCollection" build/app/assets && echo "app bundle present"'
+          # the Archived tab route is the only place the collection page calls archivedInCollection with a filter
+          docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
+            'grep -o "archivedInCollection([^)]*)\.filter" -r build/app/assets | head -1 | grep -q . && echo "Archived tab present"'
+
+      - name: Publish
+        if: ${{ inputs.publish }}
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          docker push "${{ steps.v.outputs.tag }}"
+          docker push "${{ steps.v.outputs.sha_tag }}"
+          echo "Published ${{ steps.v.outputs.tag }} and ${{ steps.v.outputs.sha_tag }}" >> "$GITHUB_STEP_SUMMARY"

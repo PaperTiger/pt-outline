@@ -1,0 +1,71 @@
+diff --git a/app/scenes/Collection/components/Navigation.tsx b/app/scenes/Collection/components/Navigation.tsx
+index 15e0e37..36970f9 100644
+--- a/app/scenes/Collection/components/Navigation.tsx
++++ b/app/scenes/Collection/components/Navigation.tsx
+@@ -13,6 +13,8 @@ export enum CollectionTab {
+   Published = "published",
+   Old = "old",
+   Alphabetical = "alphabetical",
++  // Paper Tiger: top-level archived documents in this collection
++  Archived = "archived",
+ }
+ 
+ type Props = {
+@@ -55,19 +57,13 @@ const Navigation = observer(function Navigation({
+         </Tab>
+       )}
+       <Tab {...tabProps(CollectionTab.Recent)}>{t("Documents")}</Tab>
++      {/* Paper Tiger: only Recently updated and Archived; the other sort tabs' routes still work by URL */}
+       {!collection.isArchived && (
+         <>
+-          <Tab {...tabProps(CollectionTab.Popular)}>{t("Popular")}</Tab>
+           <Tab {...tabProps(CollectionTab.Updated)}>
+             {t("Recently updated")}
+           </Tab>
+-          <Tab {...tabProps(CollectionTab.Published)}>
+-            {t("Recently published")}
+-          </Tab>
+-          <Tab {...tabProps(CollectionTab.Old)}>
+-            {t("Least recently updated")}
+-          </Tab>
+-          <Tab {...tabProps(CollectionTab.Alphabetical)}>{t("A–Z")}</Tab>
++          <Tab {...tabProps(CollectionTab.Archived)}>{t("Archived")}</Tab>
+         </>
+       )}
+     </Tabs>
+diff --git a/app/scenes/Collection/index.tsx b/app/scenes/Collection/index.tsx
+index 6d2751b..df21e00 100644
+--- a/app/scenes/Collection/index.tsx
++++ b/app/scenes/Collection/index.tsx
+@@ -246,6 +246,31 @@ const CollectionScene = observer(function CollectionScene_() {
+                 <Empty collection={collection} />
+               ) : !collection.isArchived ? (
+                 <>
++                  {/* Paper Tiger: what was archived from this collection, top level only */}
++                  <Route
++                    path={collectionPath(collection, CollectionTab.Archived)}
++                  >
++                    <PaginatedDocumentList
++                      key="archived"
++                      documents={documents
++                        .archivedInCollection(collection.id)
++                        .filter((document) => !document.parentDocumentId)
++                        .sort((a, b) =>
++                          String(b.archivedAt ?? "").localeCompare(
++                            String(a.archivedAt ?? "")
++                          )
++                        )}
++                      fetch={documents.fetchPage}
++                      options={{
++                        collectionId: collection.id,
++                        parentDocumentId: null,
++                        sort: "updatedAt",
++                        direction: "DESC",
++                        statusFilter: [StatusFilter.Archived],
++                      }}
++                      showParentDocuments
++                    />
++                  </Route>
+                   <Route
+                     path={collectionPath(
+                       collection,
