@@ -1,0 +1,1 @@
+{"Rules":[{"ID":"expire-backups-30d","Filter":{"Prefix":"backups/"},"Status":"Enabled","Expiration":{"Days":30}}]}

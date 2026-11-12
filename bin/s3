@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Runs the AWS CLI against the pt-outline Spaces bucket using the key in /opt/outline/.env.
+set -euo pipefail
+v() { grep "^$1=" /opt/outline/.env | head -1 | cut -d= -f2-; }
+AWS_ACCESS_KEY_ID=$(v AWS_ACCESS_KEY_ID) AWS_SECRET_ACCESS_KEY=$(v AWS_SECRET_ACCESS_KEY) AWS_DEFAULT_REGION=us-east-1 \
+  exec aws --endpoint-url https://nyc3.digitaloceanspaces.com "$@"

@@ -1,0 +1,10 @@
+[Unit]
+Description=Nightly Outline backup (07:00 UTC, 2am Eastern)
+
+[Timer]
+OnCalendar=*-*-* 07:00:00 UTC
+RandomizedDelaySec=10m
+Persistent=true
+
+[Install]
+WantedBy=timers.target

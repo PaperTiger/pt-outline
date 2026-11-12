@@ -1,0 +1,10 @@
+[Unit]
+Description=Outline Postgres dump to Spaces
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/opt/outline/bin/backup.sh
+StandardOutput=append:/opt/outline/logs/backup.log
+StandardError=append:/opt/outline/logs/backup.log
