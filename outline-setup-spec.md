@@ -283,3 +283,4 @@ Add a dated row whenever you decide something this brief doesn't cover.
 | 2026-11-12 | The importer sets the sidebar order explicitly | Outline puts each new doc at the top, which reversed every list, including newest-first meetings |
 | 2026-11-12 | Mirrored skill docs carry a "Mirror key · Source hash" line, and the mirror updates only when the hash changes | Outline rewrites markdown on save, so comparing the text would add a new revision to every skill doc on every push |
 | 2026-11-12 | The mirror warns and skips when its key is missing | Its first run on develop happens before the `pt-agents-mirror` user and its key exist |
+| 2026-11-12 | MCP left on (Outline's default) and given custom guidance that points to Handbook → Writing for agents | Outline 1.12 turns MCP on unless it's switched off. The guidance repeats the essential rules, because an agent may not open the Handbook doc before it writes |
