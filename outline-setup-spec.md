@@ -275,3 +275,11 @@ Add a dated row whenever you decide something this brief doesn't cover.
 | 2026-11-12 | Email (magic link) sign-in turned off, allowed domain set by API | Both were defaults that conflicted with "Google only, papertiger.com only" |
 | 2026-11-12 | Emails come from `noreply@papertiger.com` via the Workspace relay | The relay accepts any address in a Workspace domain. `papertiger.agency` isn't in Workspace |
 | 2026-11-12 | Spaces CDN off | Outline serves uploads through short-lived signed links, which a CDN can't cache, and a CDN would keep copies of private client files at its edge servers |
+| 2026-11-12 | Service parents come from the agency overview's capabilities list. Content folds into Strategy as Content Strategy | It's the most recent list of services the partners have signed off. A separate Content parent would have duplicated Content Strategy |
+| 2026-11-12 | The Design process guides sit under a "Website design process" parent in Design | There are seven of them and they describe one process. Website redesign is one of the three areas of expertise on papertiger.com |
+| 2026-11-12 | Each collection opens with a pinned "About <collection>" doc | The doc tells people and agents what belongs in the collection, and pinning keeps it at the top |
+| 2026-11-12 | Outline's sample "Welcome" collection archived, not deleted | Nothing in it was ours, and archiving can be undone |
+| 2026-11-12 | `pt-workspace/agency` not imported | Every file in it is an empty placeholder |
+| 2026-11-12 | The importer sets the sidebar order explicitly | Outline puts each new doc at the top, which reversed every list, including newest-first meetings |
+| 2026-11-12 | Mirrored skill docs carry a "Mirror key · Source hash" line, and the mirror updates only when the hash changes | Outline rewrites markdown on save, so comparing the text would add a new revision to every skill doc on every push |
+| 2026-11-12 | The mirror warns and skips when its key is missing | Its first run on develop happens before the `pt-agents-mirror` user and its key exist |

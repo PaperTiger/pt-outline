@@ -98,6 +98,7 @@ def main():
     colls = {c["name"]: c["id"] for c in api("collections.list", {"limit": 100})["data"]}
     stats = {"created": 0, "updated": 0, "unchanged": 0}
     docs = []  # (meta, body, id)
+    order = {}  # (collection, parent) -> child ids in the wanted order
 
     def existing_children(coll_id, parent_id):
         out, offset = {}, 0
@@ -142,6 +143,7 @@ def main():
                 stats["created"] += 1
             state[k] = doc_id
             docs.append((meta, body, doc_id, k))
+            order.setdefault((coll_id, parent_id), []).append(doc_id)
             if not DRY:
                 json.dump(state, open(STATE, "w"), indent=1)
             put(children, coll_id, doc_id)
@@ -172,7 +174,30 @@ def main():
         text = re.sub(r"\]\(outline-key:([^)]+)\)", rep, body).rstrip() + source_line(meta)
         api("documents.update", {"id": doc_id, "text": text, "publish": True})
     json.dump({"ids": state, "urls": {k: BASE + u for k, u in urls.items()}}, open(STATE.replace(".json", ".urls.json"), "w"), indent=1)
-    print(json.dumps({**stats, "total": len(docs), "unresolved_links": sorted(missing)}, indent=1))
+
+    # pass 3: sidebar order. Outline puts each new doc first, so set the order explicitly.
+    # Docs added by hand in Outline keep their place after the imported ones.
+    moves = 0
+    for coll_id in {c for c, _ in order}:
+        actual = {}
+        def walk_tree(nodes, parent):
+            actual[parent] = [n["id"] for n in nodes]
+            for n in nodes:
+                walk_tree(n.get("children", []), n["id"])
+        walk_tree(api("collections.documents", {"id": coll_id})["data"], None)
+        for (c, parent), wanted in order.items():
+            if c != coll_id:
+                continue
+            now = [i for i in actual.get(parent, []) if i in wanted]
+            if now == wanted:
+                continue
+            for i, doc_id in enumerate(wanted):
+                body = {"id": doc_id, "collectionId": coll_id, "index": i}
+                if parent:
+                    body["parentDocumentId"] = parent
+                api("documents.move", body)
+                moves += 1
+    print(json.dumps({**stats, "total": len(docs), "reordered": moves, "unresolved_links": sorted(missing)}, indent=1))
 
 
 main()
