@@ -1,0 +1,53 @@
+diff --git a/shared/styles/theme.ts b/shared/styles/theme.ts
+index 544ee6d..1b6eeaf 100644
+--- a/shared/styles/theme.ts
++++ b/shared/styles/theme.ts
+@@ -140,7 +140,8 @@ export const buildLightTheme = (input: Partial<Colors>): DefaultTheme => {
+     cursor: colors.almostBlack,
+     text: colors.almostBlack,
+     textSecondary: colors.slateDark,
+-    textTertiary: colors.slate,
++    // Paper Tiger: darker than slate (#66778F), which was hard to read
++    textTertiary: "#4B5563",
+     textDiffInserted: colors.almostBlack,
+     textDiffInsertedBackground: "rgba(18, 138, 41, 0.16)",
+     textDiffDeleted: colors.slateDark,
+@@ -151,7 +152,8 @@ export const buildLightTheme = (input: Partial<Colors>): DefaultTheme => {
+     sidebarActiveBackground: "hsl(212 31% 85% / 1)",
+     sidebarControlHoverBackground: "rgb(138 164 193 / 20%)",
+     sidebarDraftBorder: "hsl(212 31% 75% / 1)",
+-    sidebarText: "rgb(78, 92, 110)",
++    // Paper Tiger: darker grey for the sidebar menu
++    sidebarText: "#2B313B",
+     backdrop: "rgba(0, 0, 0, 0.2)",
+     shadow: "rgba(0, 0, 0, 0.2)",
+ 
+@@ -205,19 +207,21 @@ export const buildDarkTheme = (input: Partial<Colors>): DefaultTheme => {
+     link: "#137FFB",
+     text: colors.almostWhite,
+     cursor: colors.almostWhite,
+-    textSecondary: lighten(0.1, colors.slate),
+-    textTertiary: colors.slate,
++    // Paper Tiger: lighter than slate, which was hard to read on dark
++    textSecondary: "#C3CAD3",
++    textTertiary: "#A3ADBA",
+     textDiffInserted: colors.almostWhite,
+     textDiffInsertedBackground: "rgba(63,185,80,0.25)",
+     textDiffDeleted: darken(0.1, colors.almostWhite),
+     textDiffDeletedBackground: "rgba(248,81,73,0.15)",
+     placeholder: "hsl(215 17% 30% / 1)",
+-    sidebarBackground: colors.veryDarkBlue,
+-    sidebarHoverBackground: lighten(0.05, colors.veryDarkBlue),
+-    sidebarActiveBackground: lighten(0.09, colors.veryDarkBlue),
++    // Paper Tiger: black sidebar with very light grey text
++    sidebarBackground: colors.black,
++    sidebarHoverBackground: "#161616",
++    sidebarActiveBackground: "#242424",
+     sidebarControlHoverBackground: colors.white10,
+-    sidebarDraftBorder: lighten(0.2, colors.veryDarkBlue),
+-    sidebarText: colors.slate,
++    sidebarDraftBorder: "#3A3A3A",
++    sidebarText: "#E4E7EB",
+     backdrop: "rgba(0, 0, 0, 0.5)",
+     shadow: "rgba(0, 0, 0, 0.6)",
+ 

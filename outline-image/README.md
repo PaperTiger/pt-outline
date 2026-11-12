@@ -15,6 +15,20 @@ updated, Archived**.
   collection. A doc archived on its own under a doc that's still active doesn't show here, but it's on
   Outline's own Archive page.
 
+`patches/02-theme-colors.patch`: easier-to-read greys, in `shared/styles/theme.ts` only.
+
+| Color | Was | Now |
+| --- | --- | --- |
+| Light: small grey text (dates, details) | `#66778F`, 4.6:1 | `#4B5563`, 7.6:1 |
+| Light: sidebar menu text | `#4E5C6E`, 6.1:1 | `#2B313B`, 11.6:1 |
+| Dark: sidebar background | `#08090C` | black |
+| Dark: sidebar menu text | `#66778F`, 4.4:1 | `#E4E7EB`, 16.9:1 |
+| Dark: small grey text | `#66778F`, 4.1:1 | `#A3ADBA`, 8.2:1 |
+| Dark: secondary text | lighter slate | `#C3CAD3`, 11.2:1 |
+
+The ratios are contrast against the background (4.5:1 is the usual minimum for text). To change a color, edit the
+patch's values, or re-make it the way "Upgrading Outline" describes.
+
 ## Upgrading Outline
 
 1. Set `VERSION` to the new release (for example `1.13.0`) on a branch and push. The workflow runs a check

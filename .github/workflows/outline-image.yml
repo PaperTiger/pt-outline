@@ -80,6 +80,9 @@ jobs:
           # the Archived tab route is the only place the collection page calls archivedInCollection with a filter
           docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
             'grep -o "archivedInCollection([^)]*)\.filter" -r build/app/assets | head -1 | grep -q . && echo "Archived tab present"'
+          # the theme patch's sidebar colors are in the bundle
+          docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
+            'grep -rqi "2B313B" build/app/assets && grep -rqi "E4E7EB" build/app/assets && echo "Theme colors present"'
 
       - name: Publish
         if: ${{ inputs.publish }}
