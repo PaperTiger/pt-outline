@@ -43,14 +43,14 @@ DigitalOcean cloud firewall `pt-outline-fw` (ID `cb702907-be45-485d-b81d-42cec0a
 
 | Piece | Where |
 |---|---|
-| Outline `1.12.0` | Docker, `/opt/outline/docker-compose.yml`, bound to `127.0.0.1:3000` only |
+| Outline `1.12.0` with our collection-tabs patch (`ghcr.io/papertiger/outline:1.12.0-pt`, see `outline-image/README.md`) | Docker, `/opt/outline/docker-compose.yml`, bound to `127.0.0.1:3000` only |
 | Postgres 16, Redis 7 | Docker, same compose file, named volumes `outline_pgdata` and `outline_redisdata` |
 | Caddy (TLS, reverse proxy) | On the host, `/etc/caddy/Caddyfile` (copy of `Caddyfile` in this repo). Let's Encrypt certificate renews itself |
 | Uploads | Spaces bucket `pt-outline` (nyc3, standard, private, CDN off). CORS allows `https://papertiger.agency` only |
 | Email | Google Workspace SMTP relay (`smtp-relay.gmail.com:587`, IP-authenticated), from `noreply@papertiger.com` |
 | Sign-in | Google only |
 
-Upgrade Outline: change the image tag in `docker-compose.yml`, copy it to `/opt/outline`, then `cd /opt/outline && docker compose pull && docker compose up -d`. Run a backup first.
+Upgrade Outline: follow `outline-image/README.md` (bump `VERSION`, pass the check build, publish), then set the new tag in `docker-compose.yml`, copy it to `/opt/outline`, and run `cd /opt/outline && docker compose pull && docker compose up -d`. Run a backup first. The runbook for people is in Outline: Resources → Internal Tools → Outline (papertiger.agency).
 
 ## Secrets
 
@@ -90,3 +90,4 @@ Backups expire after 30 days via the bucket lifecycle rule `expire-backups-30d` 
 - 2026-11-12: The first Spaces key had full access to every bucket. Marc regenerated `outline-11122026` as `bucket=pt-outline;permission=readwrite`. Confirmed it can't read other buckets
 - 2026-11-12: Backup script now deletes its local dump even when the upload fails
 - 2026-11-12: Workspace renamed "Paper Tiger", allowed domain set to `papertiger.com`, email (magic link) sign-in turned off. Google is the only sign-in method
+- 2026-11-12: Switched to the patched image `ghcr.io/papertiger/outline:1.12.0-pt` (collection tabs). The stock compose file is kept as `/opt/outline/docker-compose.yml.bak-stock-1.12.0`
