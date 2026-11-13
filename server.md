@@ -45,7 +45,7 @@ DigitalOcean cloud firewall `pt-outline-fw` (ID `cb702907-be45-485d-b81d-42cec0a
 |---|---|
 | Outline `1.12.0` with our collection-tabs patch (`ghcr.io/papertiger/outline:1.12.0-pt`, see `outline-image/README.md`) | Docker, `/opt/outline/docker-compose.yml`, bound to `127.0.0.1:3000` only |
 | Postgres 16, Redis 7 | Docker, same compose file, named volumes `outline_pgdata` and `outline_redisdata` |
-| Caddy (TLS, reverse proxy) | On the host, `/etc/caddy/Caddyfile` (copy of `Caddyfile` in this repo). Let's Encrypt certificate renews itself |
+| Caddy (TLS, reverse proxy) | On the host, `/etc/caddy/Caddyfile` (copy of `Caddyfile` in this repo). Let's Encrypt certificate renews itself. Access log at `/var/log/caddy/papertiger.agency.log` (JSON, one line per request; Authorization and Cookie redacted; rolls at 50 MB, 5 files, 30 days) |
 | Uploads | Spaces bucket `pt-outline` (nyc3, standard, private, CDN off). CORS allows `https://papertiger.agency` only |
 | Email | Google Workspace SMTP relay (`smtp-relay.gmail.com:587`, IP-authenticated), from `noreply@papertiger.com` |
 | Sign-in | Google only |
@@ -92,3 +92,4 @@ Backups expire after 30 days via the bucket lifecycle rule `expire-backups-30d` 
 - 2026-11-12: Workspace renamed "Paper Tiger", allowed domain set to `papertiger.com`, email (magic link) sign-in turned off. Google is the only sign-in method
 - 2026-11-12: Switched to the patched image `ghcr.io/papertiger/outline:1.12.0-pt` (collection tabs). The stock compose file is kept as `/opt/outline/docker-compose.yml.bak-stock-1.12.0`
 - 2026-11-13: Caddy redirects `www.papertiger.agency` to `papertiger.agency` (path kept, permanent). Needs the `www` CNAME in DigitalOcean DNS; previous Caddyfile kept as `/etc/caddy/Caddyfile.bak-before-www`
+- 2026-11-13: Caddy access log turned on for papertiger.agency while the team onboards, to diagnose dropped MCP and app requests. The log file must be owned by `caddy` (running `caddy validate` as root creates it as root and the reload fails). Previous Caddyfile kept as `/etc/caddy/Caddyfile.bak-before-log`. Turn off by removing the `log` block once onboarding settles

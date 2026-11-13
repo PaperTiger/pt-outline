@@ -1,5 +1,14 @@
 papertiger.agency {
 	encode zstd gzip
+	# Access log, on while we onboard the team, to diagnose dropped agent (MCP) and app requests.
+	# Caddy leaves out Authorization and Cookie values. Rolls at 50 MB, keeps 5 files and at most 30 days.
+	log {
+		output file /var/log/caddy/papertiger.agency.log {
+			roll_size 50MiB
+			roll_keep 5
+			roll_keep_for 720h
+		}
+	}
 	reverse_proxy 127.0.0.1:3000
 }
 
