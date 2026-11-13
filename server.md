@@ -21,7 +21,7 @@ Created Nov 12, 2026 by Claude Code.
 | Tag | `INTERNAL` |
 | Monitoring | On |
 | Droplet backups | On (about $2.40/month). This droplet holds live data |
-| DNS | `papertiger.agency` A record → `64.225.7.247`, TTL 300, in DigitalOcean DNS |
+| DNS | `papertiger.agency` A record → `64.225.7.247`, TTL 300, in DigitalOcean DNS. `www` is a CNAME to it, and Caddy redirects `www` to the bare domain |
 
 ## Access
 
@@ -91,3 +91,4 @@ Backups expire after 30 days via the bucket lifecycle rule `expire-backups-30d` 
 - 2026-11-12: Backup script now deletes its local dump even when the upload fails
 - 2026-11-12: Workspace renamed "Paper Tiger", allowed domain set to `papertiger.com`, email (magic link) sign-in turned off. Google is the only sign-in method
 - 2026-11-12: Switched to the patched image `ghcr.io/papertiger/outline:1.12.0-pt` (collection tabs). The stock compose file is kept as `/opt/outline/docker-compose.yml.bak-stock-1.12.0`
+- 2026-11-13: Caddy redirects `www.papertiger.agency` to `papertiger.agency` (path kept, permanent). Needs the `www` CNAME in DigitalOcean DNS; previous Caddyfile kept as `/etc/caddy/Caddyfile.bak-before-www`

@@ -2,3 +2,8 @@ papertiger.agency {
 	encode zstd gzip
 	reverse_proxy 127.0.0.1:3000
 }
+
+# www goes to the bare domain, keeping the path. Caddy gets a certificate for www once its DNS record exists.
+www.papertiger.agency {
+	redir https://papertiger.agency{uri} permanent
+}
