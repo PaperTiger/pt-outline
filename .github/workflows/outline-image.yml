@@ -83,6 +83,9 @@ jobs:
           # the theme patch's sidebar colors are in the bundle
           docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
             'grep -rqi "2B313B" build/app/assets && grep -rqi "E4E7EB" build/app/assets && echo "Theme colors present"'
+          # the CIMD fix: documents that list none among other methods are accepted
+          docker run --rm --entrypoint sh "${{ steps.v.outputs.tag }}" -c \
+            'grep -q "must allow the none method" build/server/utils/oauth/ClientMetadataHelper.js && echo "CIMD fix present"'
 
       - name: Publish
         if: ${{ inputs.publish }}

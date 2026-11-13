@@ -1,6 +1,6 @@
 # Patched Outline image
 
-papertiger.agency runs Outline with two small patches on top, built by `.github/workflows/outline-image.yml`
+papertiger.agency runs Outline with three small patches on top, built by `.github/workflows/outline-image.yml`
 into `ghcr.io/papertiger/outline:<version>-pt`. Nothing here touches the database, so the stock image can
 always replace ours.
 
@@ -29,6 +29,13 @@ updated, Archived**.
 The ratios are contrast against the background (4.5:1 is the usual minimum for text). To change a color, edit the
 patch's values, or re-make it the way "Upgrading Outline" describes.
 
+`patches/03-cimd-auth-methods.patch`: lets ChatGPT connect to the MCP server. ChatGPT's client metadata
+document prefers `private_key_jwt` but also lists `none`, and 1.12.0 rejected any document whose preferred
+method wasn't `none` ("token_endpoint_auth_method Invalid input: expected "none""). This is upstream's own fix,
+[outline/outline#14305](https://github.com/outline/outline/pull/14305), copied unchanged into
+`server/utils/oauth/ClientMetadataHelper.ts`. It's in Outline releases after 1.12.0, so **drop this patch when
+upgrading** to a release that includes it (`git apply --check` will fail on it then).
+
 ## Upgrading Outline
 
 1. Set `VERSION` to the new release (for example `1.13.0`) on a branch and push. The workflow runs a check
@@ -45,4 +52,4 @@ Each published build also gets a `<version>-pt-<commit>` tag, so you can pin an 
 ## Rolling back
 
 Set the image in `docker-compose.yml` back to `docker.getoutline.com/outlinewiki/outline:<version>` and run
-`docker compose up -d outline`. The tabs and colors go back to Outline's defaults. No data changes either way.
+`docker compose up -d outline`. The tabs and colors go back to Outline's defaults, and ChatGPT can't connect again until the upgrade. No data changes either way.
